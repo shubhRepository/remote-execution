@@ -1,4 +1,4 @@
-package com.remote.submission.model;
+package com.remote.consumer.model;
 
 import jakarta.persistence.*;
 import lombok.*;
