@@ -7,10 +7,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitMQConfig {
 
-    public static final String QUEUE_NAME = "file-execution-queue";
-
     @Bean
     public Queue fileExecutionQueue() {
-        return new Queue(QUEUE_NAME, true); // The 'true' makes the queue durable
+        return new Queue(Constants.FILE_EXECUTION_QUEUE, true); // The 'true' makes the queue durable
     }
 }
