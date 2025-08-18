@@ -30,7 +30,8 @@ public class ListenerService {
     }
 
     @RabbitListener(queues = Constants.FILE_EXECUTION_QUEUE, concurrency = "1")
-    public void receiveCodeExecution(CodeSubmission codeSubmission) throws Exception {
-        log.info("Container Id: {}", dockerService.createContainer(codeSubmission));
+    public void receiveCodeExecution(CodeSubmission codeSubmission) throws InterruptedException {
+        byte[] containerResponse = dockerService.executeCode(codeSubmission);
+        log.info("Container response: {}", new String(containerResponse));
     }
 }
