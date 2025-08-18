@@ -18,7 +18,7 @@ public class ConsumerServiceApplication {
 
     @PostConstruct
     public void testDocker() {
-        System.out.println("Docker version: " + dockerClient.versionCmd().exec().getVersion());
+        System.out.println("Docker version (HttpClient5): " + dockerClient.versionCmd().exec().getVersion());
     }
 
 }
