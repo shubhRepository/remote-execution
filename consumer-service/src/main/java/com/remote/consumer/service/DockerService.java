@@ -1,16 +1,18 @@
 package com.remote.consumer.service;
 
 import com.github.dockerjava.api.DockerClient;
+import com.github.dockerjava.api.async.ResultCallback;
 import com.github.dockerjava.api.command.CreateContainerResponse;
 import com.github.dockerjava.api.command.PullImageResultCallback;
-import com.github.dockerjava.api.model.Container;
-import com.github.dockerjava.api.model.HostConfig;
-import com.github.dockerjava.api.model.PullResponseItem;
+import com.github.dockerjava.api.model.Frame;
 import com.remote.consumer.model.CodeSubmission;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.Base64;
+
 
 @Service
 public class DockerService {
@@ -30,12 +32,37 @@ public class DockerService {
             pullDockerImage(imageName);
         }
 
+        String decodedCode = new String(Base64.getDecoder().decode(codeSubmission.getCodeContent().getBytes()));
         CreateContainerResponse container = dockerClient.createContainerCmd(imageName)
                 .withName("code-execution-" + codeSubmission.getSessionId())
-                .withCmd(new String[] { "python", "-c", codeSubmission.getCodeContent() })
+                .withCmd("python", "-c", decodedCode)
                 .exec();
 
+        runContainer(container.getId());
+
         return container.getId();
+    }
+
+    private void runContainer(String containerId) {
+        dockerClient.startContainerCmd(containerId).exec();
+        try {
+            dockerClient.logContainerCmd(containerId)
+                    .withStdOut(true)
+                    .withStdErr(true)
+                    .withFollowStream(true)
+                    .exec(new ResultCallback.Adapter<Frame>() {
+                        @Override
+                        public void onNext(Frame frame) {
+                            byte[] payload = frame.getPayload();
+                            String message = new String(payload);
+                            System.out.println("Message: " + message);
+                        }
+                    })
+                    .awaitCompletion();
+        } catch (InterruptedException e) {
+            System.out.println("Container execution interrupted" + e);
+            Thread.currentThread().interrupt();
+        }
     }
 
     private boolean isImageExists(String imageName) {

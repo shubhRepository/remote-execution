@@ -41,7 +41,6 @@ public class DockerConfigHttpClient5 {
     @ConditionalOnProperty(name = "docker.enabled", havingValue = "true", matchIfMissing = true)
     public CommandLineRunner verifyDocker(DockerClient client) {
         return args -> {
-            System.out.println("Docker _ping: " + client.pingCmd().exec());
             System.out.println("Docker version: " + client.versionCmd().exec().getVersion());
         };
     }
