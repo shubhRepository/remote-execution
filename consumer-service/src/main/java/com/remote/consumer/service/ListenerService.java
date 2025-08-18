@@ -26,7 +26,7 @@ public class ListenerService {
     }
 
     @RabbitListener(queues = Constants.FILE_EXECUTION_QUEUE, concurrency = "1")
-    public void receiveCodeExecution(CodeSubmission codeSubmission) {
-        dockerService.listAllContainers();
+    public void receiveCodeExecution(CodeSubmission codeSubmission) throws InterruptedException {
+        System.out.println(dockerService.createContainer(codeSubmission));
     }
 }

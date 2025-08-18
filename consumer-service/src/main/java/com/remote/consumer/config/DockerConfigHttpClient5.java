@@ -35,6 +35,8 @@ public class DockerConfigHttpClient5 {
                 .build();
     }
 
+
+    // sanity check
     @Bean
     @ConditionalOnProperty(name = "docker.enabled", havingValue = "true", matchIfMissing = true)
     public CommandLineRunner verifyDocker(DockerClient client) {
