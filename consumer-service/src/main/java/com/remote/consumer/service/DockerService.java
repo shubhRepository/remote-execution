@@ -6,6 +6,7 @@ import com.github.dockerjava.api.command.CreateContainerResponse;
 import com.github.dockerjava.api.command.PullImageResultCallback;
 import com.github.dockerjava.api.model.Frame;
 import com.github.dockerjava.api.model.HostConfig;
+import com.remote.consumer.component.WebSocketHandler;
 import com.remote.consumer.config.Constants;
 import com.remote.consumer.model.CodeSubmission;
 import org.slf4j.Logger;
@@ -24,10 +25,13 @@ public class DockerService {
     private static final Logger log = LoggerFactory.getLogger(DockerService.class);
 
     private final DockerClient dockerClient;
+    private final WebSocketHandler wsHandler;
+
 
     @Autowired
-    public DockerService(DockerClient dockerClient) {
+    public DockerService(DockerClient dockerClient, WebSocketHandler wsHandler) {
         this.dockerClient = dockerClient;
+        this.wsHandler = wsHandler;
     }
 
     public byte[] executeCode(CodeSubmission codeSubmission) throws InterruptedException {
@@ -41,7 +45,7 @@ public class DockerService {
 //            }
 //        }
         String containerId = createContainer(codeSubmission);
-        return runContainer(containerId);
+        return runContainer(containerId, codeSubmission.getSessionId());
     }
 
     private String createContainer(CodeSubmission codeSubmission) throws InterruptedException {
@@ -62,7 +66,7 @@ public class DockerService {
         return container.getId();
     }
 
-    private byte[] runContainer(String containerId) throws InterruptedException {
+    private byte[] runContainer(String containerId, String sessionId) throws InterruptedException {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
         dockerClient.startContainerCmd(containerId).exec();
@@ -77,6 +81,7 @@ public class DockerService {
                         String message = new String(payload);
                         log.info("Message: {}", message);
                         try {
+                            wsHandler.sendMessageToSession(sessionId, message);
                             outputStream.write(payload);
                         } catch (IOException e) {
                             log.error("Error writing to output stream", e);

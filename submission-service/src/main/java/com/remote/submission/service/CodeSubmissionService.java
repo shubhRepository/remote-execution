@@ -22,10 +22,14 @@ public class CodeSubmissionService {
         this.rabbitTemplate = rabbitTemplate;
     }
 
+    public String generateSessionId() {
+        return UUID.randomUUID().toString();
+    }
+
     public CodeSubmission handleCodeSubmission(CodeSubmission codeSubmission) {
         codeSubmission.setId(UUID.randomUUID().toString());
         if (codeSubmission.getSessionId() == null) {
-            codeSubmission.setSessionId(UUID.randomUUID().toString());
+            throw new IllegalArgumentException("Session id must be provided to execute code.");
         }
         codeSubmission.setCodeContent(Base64.getEncoder().encodeToString(codeSubmission.getCodeContent().getBytes()));
         codeSubmissionRepository.save(codeSubmission);
