@@ -27,6 +27,7 @@
     <modules>
         <module>submission-service</module>
         <module>consumer-service</module>
+        <module>api-gateway-service</module>
     </modules>
 
 </project>
