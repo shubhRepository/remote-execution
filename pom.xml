@@ -28,6 +28,7 @@
         <module>submission-service</module>
         <module>consumer-service</module>
         <module>api-gateway-service</module>
+        <module>eureka-service</module>
     </modules>
 
 </project>
