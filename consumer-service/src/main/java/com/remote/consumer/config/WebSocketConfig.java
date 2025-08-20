@@ -1,5 +1,6 @@
 package com.remote.consumer.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.lang.NonNull;
@@ -13,14 +14,16 @@ import com.remote.consumer.component.WebSocketHandler;
 @EnableWebSocket
 public class WebSocketConfig implements WebSocketConfigurer {
 
-    @Bean
-    public WebSocketHandler dockerOutputWebSocketHandler() {
-        return new WebSocketHandler();
+    private final WebSocketHandler wsHandler;
+
+    @Autowired
+    public WebSocketConfig(WebSocketHandler wsHandler) {
+        this.wsHandler = wsHandler;
     }
 
     @Override
     public void registerWebSocketHandlers(@NonNull WebSocketHandlerRegistry registry) {
-        registry.addHandler(dockerOutputWebSocketHandler(), "/docker-output/{sessionId}")
+        registry.addHandler(wsHandler, "/docker-output/{sessionId}")
                 .addInterceptors(new SessionIdInterceptor())
                 .setAllowedOrigins("*");
     }
