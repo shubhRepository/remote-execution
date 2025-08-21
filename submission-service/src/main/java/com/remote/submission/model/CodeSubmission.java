@@ -20,5 +20,4 @@ public class CodeSubmission {
     @Column(name = "code_content")
     private String codeContent;
     private String language;
-    private int userId;
 }
