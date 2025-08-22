@@ -1,5 +1,6 @@
-package com.remote.consumer.service;
+package com.remote.consumer.listener;
 
+import com.remote.consumer.service.DockerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -13,14 +14,14 @@ import com.remote.consumer.config.Constants;
 import com.remote.consumer.model.CodeSubmission;
 
 @Service
-public class ListenerService {
+public class QueueListener {
 
-    private static final Logger log = LoggerFactory.getLogger(ListenerService.class);
+    private static final Logger log = LoggerFactory.getLogger(QueueListener.class);
 
     private final DockerService dockerService;
 
     @Autowired
-    public ListenerService(DockerService dockerService) {
+    public QueueListener(DockerService dockerService) {
         this.dockerService = dockerService;
     }
 
