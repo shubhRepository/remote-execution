@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import com.remote.consumer.config.Constants;
 import com.remote.consumer.model.CodeSubmission;
 
+import java.io.IOException;
+
 @Service
 public class QueueListener {
 
@@ -31,7 +33,7 @@ public class QueueListener {
     }
 
     @RabbitListener(queues = Constants.FILE_EXECUTION_QUEUE, concurrency = "1")
-    public void receiveCodeExecution(CodeSubmission codeSubmission) throws InterruptedException {
+    public void receiveCodeExecution(CodeSubmission codeSubmission) throws InterruptedException, IOException {
         byte[] containerResponse = dockerService.executeCode(codeSubmission);
         log.info("Container response: {}", new String(containerResponse));
     }
